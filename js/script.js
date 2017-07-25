@@ -6,6 +6,7 @@ let testString = "https://sheets.googleapis.com/v4/spreadsheets/1azyTuUPH2BxNwoK
 let week = "Week 8"
 let testObj = {};
 let seed1 = [];
+let myTeam = "Team Rank 5";
 
 let getSpreadsheet = function() {
     let queryURL =  `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetID}?key=${apiKey}`;
@@ -36,7 +37,11 @@ let getPlayers = function() {
         testObj = data;
         
         // look through each row. If the row has "1" in column A, add the player for that row into the array of 1 seeds
+        // If the team name matches my own team, skip down 5 lines
         for (var i = 0; i < testObj.values.length; i++) {
+            if (testObj.values[i][1] === myTeam) {
+                i += 5;
+            }
             if (testObj.values[i][0] === "1") {
                 seed1.push(testObj.values[i][1]);
             }
