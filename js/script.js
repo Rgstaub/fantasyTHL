@@ -14,7 +14,6 @@ firebase.initializeApp(config);
 
 const db = firebase.database();
 
-
 const apiKey = "AIzaSyAil2fLaeuR0RTx_pJOzBtghvqE856E_Bc";
 let spreadsheetID = "1azyTuUPH2BxNwoKlkHp2HkJEbspIKgKugirm8V4A0cM"
 let week = "Week 8"
@@ -23,20 +22,6 @@ let weeklySheet = {};
 let players = [];
 let myTeam = "Get Off My Lawn";
 let teamSize = 5;
-
-let getSpreadsheet = function() {
-    let queryURL =  `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetID}?key=${apiKey}`;
-    console.log(queryURL);
-
-    $.ajax({
-        url: queryURL,
-        method: "GET"
-    })
-
-    .done(function(data) {
-        console.log(data);
-    })
-}
 
 
 let getPlayers = function() {
@@ -54,7 +39,6 @@ let getPlayers = function() {
         console.log(data)
         weeklySheet = data;
         
-
         // This is the 'sorter' loop. It will run through the full sheet once for each seed, placing
         // players of a common seed into an array
         for (let j = 0; j < teamSize; j++) {
@@ -99,16 +83,31 @@ db.ref().on('value', function(snap) {
 // Loop through and draw each seed one by one
 let drawPlayers = function() {
 	$('#playerPicker').empty();
-	for (var i = 0; i < teamSize; i++) {
-		let seedWrap = $('<ul>').attr("id", `seed${i+1}`).addClass('seed-header');
-		seedWrap.text(`Seed: ${i+1}`);
-		$('#playerPicker').append(seedWrap);
-		players[i].forEach(function(j) {
-			let playerWrap = $('<li>')
-			playerWrap.text(j.name);
-			seedWrap.append(playerWrap);
+    // Build the Bootstrap collapsable panel
+    let collapse = $(`<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">`);
+	let collapsePanel = $(`<div id="accordion-panel" class="panel panel-default">`);
+    collapse.append(collapsePanel);
+    // Build the sub-panels. One for each seed
+    for (var i = 0; i < teamSize; i++) {
+		let seedWrap = $(`<div class="panel-heading" role="tab" id="seed${i+1}">`);
+		let seedHeader = $(`<h4 class="panel-title">`);
+        let seedLink = $(`<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse${i+1}" aria-expanded="true" aria-controls="collapse${i+1}">`);
+        seedLink.text(`${i+1} Seed`);
+        seedWrap.append(seedHeader).append(seedLink);
+		collapsePanel.append(seedWrap);
+        let collapsedSet = $(`<div id="collapse${i+1}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${i+1}">`);
+		let collapsedBody = $(`<div class="panel-body">`);
+        collapsedSet.append(collapsedBody);
+        collapsePanel.append(collapsedSet);
+        // Add each player for the current seed
+        players[i].forEach(function(player) {
+			
+
+            let playerWrap = $('<div>')
+			playerWrap.text(player.name);
+			collapsedBody.append(playerWrap);
 		});
 	}
-	
+	$('#playerPicker').append(collapse);
 
 }
