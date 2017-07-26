@@ -73,7 +73,8 @@ let getPlayers = function() {
                         oppClass1: weeklySheet.values[opponentPos][4],
                         oppClass2: weeklySheet.values[opponentPos][5],
                         oppClass3: weeklySheet.values[opponentPos][6],
-                        oppClass4: weeklySheet.values[opponentPos][7]
+                        oppClass4: weeklySheet.values[opponentPos][7],
+                        score: weeklySheet.values[i][13]
                     }
                     seed.push(player);
                 } 
@@ -118,11 +119,31 @@ let drawPlayers = function() {
         collapsePanel.append(collapsedSet);
         // Add each player for the current seed
         players[i].forEach(function(player) {
-			
+			let inputGroup = $(`<div>`).addClass(`radio`);
+            let inputLabel = $(`<label>`);
+            let input = $(`<input>`);
+            input.attr({
+                'type': 'radio',
+                'name': `seed-${i+1}-radio`,
+                'id': `${player.name}-radio`,
+                'value': player.name
+            });
+            let playerInfo = $('<div>');
+            let playerName = $('<span>').text(player.name).addClass('name');
+            let playerPR = $('<span>').text(`PR: ${player.pr}`).addClass('pr');
+            let playerClasses = $('<span>').text(`Classes: ${player.class1}, ${player.class2}, ${player.class3}, ${player.class4}`).addClass('classes');
+            playerInfo.append(playerName, playerPR, playerClasses, '<br>');
+            inputLabel.append(playerInfo);
+            let oppInfo = $('<div>');
+            let oppName = $('<span>').text(`Opponent: ${player.opp}`).addClass('opp-name');
+            let oppPR = $('<span>').text(`PR: ${player.oppPr}`).addClass('pr');
+            let oppClasses = $('<span>').text(`Classes: ${player.oppClass1}, ${player.oppClass2}, ${player.oppClass3}, ${player.oppClass4}`).addClass('classes');            
+            playerInfo.append(oppName, oppPR, oppClasses);
+            inputLabel.append(oppInfo);
+            inputLabel.prepend(input);
+            inputGroup.append(inputLabel);
 
-            let playerWrap = $('<div>')
-			playerWrap.text(player.name);
-			collapsedBody.append(playerWrap);
+			collapsedBody.append(inputGroup);
 		});
 	}
 	$('#playerPicker').append(collapse);
