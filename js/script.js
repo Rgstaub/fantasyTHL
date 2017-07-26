@@ -151,7 +151,6 @@ let drawPlayers = function() {
             inputLabel.append(oppInfo);
             inputLabel.prepend(input);
             inputGroup.append(inputLabel);
-
 			collapsedBody.append(inputGroup);
 		});
 	}
