@@ -39,11 +39,18 @@ let getPlayers = function() {
         console.log(data)
         weeklySheet = data;
         let oppArr = [];
+        let opposingTeamArr = [];
 
         // Build an array to refernce which row each player exists on
         for (let k = 0; k < weeklySheet.values.length; k++) {
+            // Build an array to refernce which row each player exists on
             oppArr.push(weeklySheet.values[k][1]);
+            // Build an array to refernce which row each opposing team exists on
+            opposingTeamArr.push(weeklySheet.values[k][8])
         }
+
+        let opposingTeamPos = opposingTeamArr.indexOf(myTeam);
+        console.log(opposingTeamPos);
         // This is the 'sorter' loop. It will run through the full sheet once for each seed, placing
         // players of a common seed into an array
         for (let j = 0; j < teamSize; j++) {
@@ -52,6 +59,8 @@ let getPlayers = function() {
             // look through each row of the sheet. Upon your own team, skip ahead to the next team
             for (let i = 0; i < weeklySheet.values.length; i++) {
                 if (weeklySheet.values[i][1] === myTeam) {
+                    i += teamSize + 1;
+                } else if (i === opposingTeamPos) {
                     i += teamSize + 1;
                 }
   				// if the player on the row matches the seed of the current iteration, create an object 
