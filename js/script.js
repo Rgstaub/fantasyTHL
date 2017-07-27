@@ -20,8 +20,11 @@ let week = "Week 8"
 let num = 7;
 let weeklySheet = {};
 let players = [];
-let myTeam = "Get Off My Lawn";
+let myTHLteam = "Get Off My Lawn";
+let myFantasyTeam = "The Hairy Privates"
 let teamSize = 5;
+let prCap = 1800;
+
 
 
 let getPlayers = function() {
@@ -49,8 +52,7 @@ let getPlayers = function() {
             opposingTeamArr.push(weeklySheet.values[k][8])
         }
 
-        let opposingTeamPos = opposingTeamArr.indexOf(myTeam);
-        console.log(opposingTeamPos);
+        let opposingTeamPos = opposingTeamArr.indexOf(myTHLteam);
         // This is the 'sorter' loop. It will run through the full sheet once for each seed, placing
         // players of a common seed into an array
         for (let j = 0; j < teamSize; j++) {
@@ -58,7 +60,7 @@ let getPlayers = function() {
 
             // look through each row of the sheet. Upon your own team, skip ahead to the next team
             for (let i = 0; i < weeklySheet.values.length; i++) {
-                if (weeklySheet.values[i][1] === myTeam) {
+                if (weeklySheet.values[i][1] === myTHLteam) {
                     i += teamSize + 1;
                 } else if (i === opposingTeamPos) {
                     i += teamSize + 1;
@@ -116,6 +118,7 @@ let drawPlayers = function() {
     collapse.append(collapsePanel);
     // Build the sub-panels. One for each seed
     for (var i = 0; i < teamSize; i++) {
+        let seedPos = 0;
 		let seedWrap = $(`<div class="panel-heading" role="tab" id="seed${i+1}">`);
 		let seedHeader = $(`<h4 class="panel-title">`);
         let seedLink = $(`<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse${i+1}" aria-expanded="true" aria-controls="collapse${i+1}">`);
@@ -135,8 +138,11 @@ let drawPlayers = function() {
                 'type': 'radio',
                 'name': `seed-${i+1}-radio`,
                 'id': `${player.name}-radio`,
-                'value': player.name
+                'value': player.name,
+                'seed': i,
+                'seed-position': seedPos
             });
+            seedPos++;
             let playerInfo = $('<div>');
             let playerName = $('<span>').text(player.name).addClass('name');
             let playerPR = $('<span>').text(`PR: ${player.pr}`).addClass('pr');
@@ -155,5 +161,17 @@ let drawPlayers = function() {
 		});
 	}
 	$('#playerPicker').append(collapse);
+}
+
+let drawTeam = function() {
+    
 
 }
+
+$(document).on('change', 'input', function() {
+    console.log(this);
+    let seed = $(this).attr('seed');
+    let seedPos = $(this).attr('seed-position');
+    console.log(players[seed][seedPos]);
+
+})
