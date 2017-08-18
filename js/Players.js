@@ -1,5 +1,6 @@
 "use strict"
 
+const keys = require('./keys.js');
 
 // Initialize Firebase
 let config = {
@@ -17,18 +18,15 @@ const db = firebase.database();
 const apiKey = "AIzaSyAil2fLaeuR0RTx_pJOzBtghvqE856E_Bc";
 let spreadsheetID = "1azyTuUPH2BxNwoKlkHp2HkJEbspIKgKugirm8V4A0cM"
 let week = "Week 8"
-let num = 7;
-let weeklySheet = {};
+
+
 let players = [];
 let myTHLteam = "Get Off My Lawn";
-let myFantasyTeam = "The Hairy Privates"
 let teamSize = 5;
 let prCap = 1800;
 
-
-
-let getPlayers = function() {
-	players = [];
+let Players = function() {
+	this.players = [];
 
     let queryURL = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetID}/values/${week}?key=${apiKey}`;
     
@@ -100,79 +98,3 @@ let getPlayers = function() {
         drawPlayers();
     })
 }
-
-
-// Update variables from Firebase
-db.ref().on('value', function(snap) {
-    spreadsheetID = snap.val().spreadsheetID;
-    week = snap.val().week;
-    getPlayers();
-
-})
-
-// Loop through and draw each seed one by one, in collapsing Boostrap panels
-let drawPlayers = function() {
-	$('#playerPicker').empty();
-    // Build the Bootstrap collapsable panel
-    let collapse = $(`<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">`);
-	let collapsePanel = $(`<div id="accordion-panel" class="panel panel-default">`);
-    collapse.append(collapsePanel);
-    // Build the sub-panels. One for each seed
-    for (var i = 0; i < teamSize; i++) {
-        let seedPos = 0;
-		let seedWrap = $(`<div class="panel-heading" role="tab" id="seed${i+1}">`);
-		let seedHeader = $(`<h4 class="panel-title">`);
-        let seedLink = $(`<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse${i+1}" aria-expanded="true" aria-controls="collapse${i+1}">`);
-        seedLink.text(`${i+1} Seed`);
-        seedWrap.append(seedHeader).append(seedLink);
-		collapsePanel.append(seedWrap);
-        let collapsedSet = $(`<div id="collapse${i+1}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${i+1}">`);
-		let collapsedBody = $(`<div class="panel-body">`);
-        collapsedSet.append(collapsedBody);
-        collapsePanel.append(collapsedSet);
-        // Add each player for the current seed
-        players[i].forEach(function(player) {
-			let inputGroup = $(`<div>`).addClass(`radio`);
-            let inputLabel = $(`<label>`);
-            let input = $(`<input>`);
-            input.attr({
-                'type': 'radio',
-                'name': `seed-${i+1}-radio`,
-                'id': `${player.name}-radio`,
-                'value': player.name,
-                'seed': i,
-                'seed-position': seedPos
-            });
-            seedPos++;
-            let playerInfo = $('<div>');
-            let playerName = $('<span>').text(player.name).addClass('name');
-            let playerPR = $('<span>').text(`PR: ${player.pr}`).addClass('pr');
-            let playerClasses = $('<span>').text(`Classes: ${player.class1}, ${player.class2}, ${player.class3}, ${player.class4}`).addClass('classes');
-            playerInfo.append(playerName, playerPR, playerClasses, '<br>');
-            inputLabel.append(playerInfo);
-            let oppInfo = $('<div>');
-            let oppName = $('<span>').text(`Opponent: ${player.opp}`).addClass('opp-name');
-            let oppPR = $('<span>').text(`PR: ${player.oppPr}`).addClass('pr');
-            let oppClasses = $('<span>').text(`Classes: ${player.oppClass1}, ${player.oppClass2}, ${player.oppClass3}, ${player.oppClass4}`).addClass('classes');            
-            playerInfo.append(oppName, oppPR, oppClasses);
-            inputLabel.append(oppInfo);
-            inputLabel.prepend(input);
-            inputGroup.append(inputLabel);
-			collapsedBody.append(inputGroup);
-		});
-	}
-	$('#playerPicker').append(collapse);
-}
-
-let drawTeam = function() {
-    
-
-}
-
-$(document).on('change', 'input', function() {
-    console.log(this);
-    let seed = $(this).attr('seed');
-    let seedPos = $(this).attr('seed-position');
-    console.log(players[seed][seedPos]);
-
-})
